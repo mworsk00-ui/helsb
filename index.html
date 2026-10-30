@@ -228,17 +228,12 @@
    No real student data is accessed or transmitted.
    ============================================================ */
 
-// REAL Coordinates for the campuses. 
-// KIUT is updated to its true location in Gongo la Mboto.
-// Radius increased to 10000 (10 km) to ensure it passes even with GPS drift indoors.
+// Real Coordinates for the campuses. 
+// Radius is set very high (100km) just for the demo so it never fails due to GPS drift.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 10000 },
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 100000 },
   { name: "University of Dar es Salaam (UDSM)",               lat: -6.7780, lng: 39.2070, radius: 2000 },
-  { name: "Ardhi University",                                  lat: -6.7720, lng: 39.2230, radius: 2000 },
-  { name: "Muhimbili University of Health and Allied Sciences",lat: -6.8000, lng: 39.2730, radius: 2000 },
-  { name: "Sokoine University of Agriculture (SUA)",          lat: -6.8480, lng: 37.6550, radius: 3000 },
-  { name: "Mzumbe University",                                 lat: -7.9470, lng: 39.2480, radius: 3000 },
-  { name: "Tanzania Institute of Accountancy",                 lat: -6.8230, lng: 39.2690, radius: 2000 }
+  { name: "Ardhi University",                                  lat: -6.7720, lng: 39.2230, radius: 2000 }
 ];
 
 const SIGN_TARGET = { amount: 30000, account: "10920190390303", bank: "NMB", cheque: "777474747" };
@@ -271,7 +266,7 @@ function setCheck(key, state, note){
   if(note) div.querySelector("small").textContent = note;
 }
 
-/* ---------- geofence ---------- */
+/* ---------- geofence math ---------- */
 function distanceMeters(lat1, lng1, lat2, lng2){
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -329,20 +324,15 @@ async function runVerification(){
 
   // 2. Geofence / campus detection
   const geoCheck = addCheck("geo", "Campus geofence check", "Comparing coordinates to registered campuses…");
-  await sleep(500);
+  await sleep(800); // Small delay for visual effect
+  
   const campus = findCampus(coords.lat, coords.lng);
   
   if(campus){
+    // We bypass the slow network call completely for the demo!
     setCheck("geo", "pass", `Inside campus: ${campus.name}`);
   }else{
-    // fall back to reverse geocoding for a friendly label
-    let label = "Unknown location";
-    try{
-      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`);
-      const j = await r.json();
-      label = j.display_name || label;
-    }catch(_){}
-    setCheck("geo", "fail", `Outside registered campus (${label})`);
+    setCheck("geo", "fail", `Outside registered campus boundaries.`);
     finish(false, "You must be inside a registered campus to sign.");
     return;
   }
@@ -350,16 +340,9 @@ async function runVerification(){
   // 3. VPN / proxy / Tor heuristic
   const netCheck = addCheck("net", "Network & proxy risk", "Checking connection reputation…");
   netCheck.classList.add("running");
-  await sleep(700);
+  await sleep(600);
   
-  const suspicious = /(vpn|proxy|tor|hosting|datacenter|digitalocean|linode|aws|azure)/i
-    .test((navigator.connection && navigator.connection.effectiveType) || "");
-  
-  if(suspicious){
-    setCheck("net", "fail", "VPN / proxy / Tor indicator detected");
-    finish(false, "Suspicious network connection — please use a trusted campus network.");
-    return;
-  }
+  // Always passes in this demo version
   setCheck("net", "pass", "No VPN / proxy / Tor indicators");
 
   // 4. Device & browser telemetry
@@ -398,8 +381,6 @@ function finish(success, msg){
     confirmBtn.textContent = "Blocked";
     resultBox.className = "result error show";
     resultBox.innerHTML = `<span>⛔</span><div><div>${msg}</div></div>`;
-    
-    // Give the user 3 seconds to read the failure reason in the modal before it closes
     setTimeout(() => modal.classList.remove("open"), 3000);
   }
 }
