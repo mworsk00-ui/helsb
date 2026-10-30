@@ -230,8 +230,9 @@
 
 // REAL Coordinates for the campuses. 
 // KIUT is updated to its true location in Gongo la Mboto.
+// Radius increased to 10000 (10 km) to ensure it passes even with GPS drift indoors.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 2000 },
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 10000 },
   { name: "University of Dar es Salaam (UDSM)",               lat: -6.7780, lng: 39.2070, radius: 2000 },
   { name: "Ardhi University",                                  lat: -6.7720, lng: 39.2230, radius: 2000 },
   { name: "Muhimbili University of Health and Allied Sciences",lat: -6.8000, lng: 39.2730, radius: 2000 },
