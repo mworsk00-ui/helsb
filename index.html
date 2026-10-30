@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HESLB — Loan Acknowledgement</title>
+<link rel="icon" href="data:,"> <!-- Stops the 404 favicon error -->
 <style>
   :root{
     --heslb-blue:#003366;
@@ -196,7 +197,6 @@
       </div>
       <div class="modal-body" id="checks">
         
-        <!-- OTP Box injected at the end -->
         <div class="otp-box" id="otpBox">
           <div style="font-size:13px; font-weight:700; color:var(--heslb-blue);">SMS Verification Code Sent</div>
           <div style="font-size:11px; color:var(--heslb-gray);">(Demo: For presentation, code is shown below)</div>
@@ -214,10 +214,6 @@
   </div>
 
 <script>
-/* ============================================================
-   HESLB LOCATION + OTP DEMO
-   ============================================================ */
-
 const CAMPUSES = [
   { name: "Kampala International University in Tanzania (KIUT)", lat: -6.9098, lng: 39.2753, radius: 15000 }
 ];
@@ -234,7 +230,6 @@ function addCheck(key, title, desc){
   const div = document.createElement("div");
   div.className = "check-item"; div.id = "chk-" + key;
   div.innerHTML = `<div class="icon">•</div><div class="txt"><strong>${title}</strong><small>${desc}</small></div>`;
-  // Insert before the OTP box so OTP stays at the bottom
   checksBox.insertBefore(div, otpBox);
   return div;
 }
@@ -256,9 +251,11 @@ function distanceMeters(lat1, lng1, lat2, lng2){
 signBtn.addEventListener("click", () => {
   checksBox.querySelectorAll('.check-item').forEach(e => e.remove());
   confirmBtn.disabled = true;
-  confirmBtn.textContent = "Sign & Confirm"; resultBox.className = "result";
+  confirmBtn.textContent = "Sign & Confirm"; 
+  resultBox.className = "result";
   otpBox.classList.remove("show");
   otpInput.value = "";
+  otpInput.style.borderColor = "#ccc";
   otpError.style.display = "none";
   modal.classList.add("open"); 
   runVerification();
@@ -268,7 +265,6 @@ el("closeModal").addEventListener("click", () => modal.classList.remove("open"))
 el("cancelBtn").addEventListener("click", () => modal.classList.remove("open"));
 
 async function runVerification(){
-  // STEP 1: LOCATION VERIFICATION
   const locCheck = addCheck("loc", "Location permission", "Requesting device location...");
   setCheck("loc", "running", "Requesting device location...");
 
@@ -298,11 +294,10 @@ async function runVerification(){
   }else{
     const km = (dist / 1000).toFixed(1);
     setCheck("geo", "fail", `Failed: You are ${km} km away from KIUT`);
-    finish(false, `Signing Blocked. You must be inside the KIUT campus to acknowledge this loan. (Detected ${km} km away).`);
+    finish(false, `Signing Blocked. You must be inside the KIUT campus. (Detected ${km} km away).`);
     return;
   }
 
-  // STEP 2: SECURITY CHECKS
   const netCheck = addCheck("net", "Network Security", "Checking VPN / Proxy risk...");
   setCheck("net", "running", "Checking network reputation...");
   await sleep(700);
@@ -312,47 +307,48 @@ async function runVerification(){
   await sleep(500);
   setCheck("dev", "pass", `${navigator.platform || "Device"} · ${navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop"}`);
 
-  // STEP 3: GENERATE OTP
+  // OTP GENERATION
   await sleep(500);
-  generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit code
+  generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
   demoOtpCode.textContent = generatedOtp;
   otpBox.classList.add("show");
   otpInput.focus();
 }
 
-// Watch the OTP input to enable/disable the button
+// Listen for OTP typing
 otpInput.addEventListener("input", (e) => {
   const val = e.target.value;
   if(val.length === 6){
     if(val === generatedOtp){
-      // Success!
       otpInput.style.borderColor = "var(--heslb-green)";
       otpError.style.display = "none";
+      
+      // UNLOCK BUTTON AND WIRE THE CLICK EVENT
       confirmBtn.disabled = false;
+      confirmBtn.onclick = () => {
+        modal.classList.remove("open");
+        resultBox.className = "result success show";
+        resultBox.innerHTML = `<span>✅</span><div>Loan acknowledged successfully.<div class="ref-line">Ref: HESLB-${Math.random().toString(36).slice(2, 9).toUpperCase()} · Verified via OTP & GPS</div></div>`;
+        signBtn.disabled = true;
+        signBtn.innerHTML = `Signed`;
+      };
+      
     } else {
-      // Failed
       otpInput.style.borderColor = "var(--heslb-red)";
       otpError.style.display = "block";
       confirmBtn.disabled = true;
+      confirmBtn.onclick = null;
     }
   } else {
     otpInput.style.borderColor = "#ccc";
     otpError.style.display = "none";
     confirmBtn.disabled = true;
+    confirmBtn.onclick = null;
   }
 });
 
 function finish(success, msg){
-  if(success){
-    confirmBtn.textContent = "Sign & Confirm";
-    confirmBtn.onclick = () => {
-      modal.classList.remove("open");
-      resultBox.className = "result success show";
-      resultBox.innerHTML = `<span>✅</span><div>Loan acknowledged successfully.<div class="ref-line">Ref: HESLB-${Math.random().toString(36).slice(2, 9).toUpperCase()} · Verified via OTP & GPS</div></div>`;
-      signBtn.disabled = true;
-      signBtn.innerHTML = `Signed`;
-    };
-  }else{
+  if(!success){
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Blocked";
     resultBox.className = "result error show";
