@@ -189,11 +189,12 @@
    HESLB LOCATION-FIRST DEMO
    ============================================================ */
 
-// Generous radius (5,000 meters / 5km) to accommodate indoor GPS drift 
-// while still blocking anyone outside Dar es Salaam.
+// Radius set to 15,000 meters (15 KM) to completely cover the KIUT campus 
+// and ensure GPS drift inside buildings does not block you.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.9098, lng: 39.2753, radius: 2000 }
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.9098, lng: 39.2753, radius: 15000 }
 ];
+
 const el = id => document.getElementById(id);
 const modal = el("modal"), checksBox = el("checks"), resultBox = el("result");
 const confirmBtn = el("confirmBtn"), signBtn = el("signBtn");
