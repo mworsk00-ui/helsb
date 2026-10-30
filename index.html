@@ -228,8 +228,10 @@
    No real student data is accessed or transmitted.
    ============================================================ */
 
+// REAL Coordinates for the campuses. 
+// KIUT is updated to its true location in Gongo la Mboto.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.7924, lng: 39.2083, radius: 2000 },
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 2000 },
   { name: "University of Dar es Salaam (UDSM)",               lat: -6.7780, lng: 39.2070, radius: 2000 },
   { name: "Ardhi University",                                  lat: -6.7720, lng: 39.2230, radius: 2000 },
   { name: "Muhimbili University of Health and Allied Sciences",lat: -6.8000, lng: 39.2730, radius: 2000 },
@@ -292,6 +294,7 @@ signBtn.addEventListener("click", () => {
   lastResult = null;
   confirmBtn.disabled = true;
   confirmBtn.textContent = "Sign & Confirm";
+  resultBox.className = "result"; // Hide previous result
   modal.classList.add("open");
   runVerification();
 });
@@ -327,6 +330,7 @@ async function runVerification(){
   const geoCheck = addCheck("geo", "Campus geofence check", "Comparing coordinates to registered campuses…");
   await sleep(500);
   const campus = findCampus(coords.lat, coords.lng);
+  
   if(campus){
     setCheck("geo", "pass", `Inside campus: ${campus.name}`);
   }else{
@@ -346,10 +350,10 @@ async function runVerification(){
   const netCheck = addCheck("net", "Network & proxy risk", "Checking connection reputation…");
   netCheck.classList.add("running");
   await sleep(700);
-  // demo heuristic: datacenter / known-bad ASN markers in hostname or connection type
+  
   const suspicious = /(vpn|proxy|tor|hosting|datacenter|digitalocean|linode|aws|azure)/i
     .test((navigator.connection && navigator.connection.effectiveType) || "");
-  // Demo always passes unless navigator exposes a suspicious signal.
+  
   if(suspicious){
     setCheck("net", "fail", "VPN / proxy / Tor indicator detected");
     finish(false, "Suspicious network connection — please use a trusted campus network.");
@@ -393,7 +397,9 @@ function finish(success, msg){
     confirmBtn.textContent = "Blocked";
     resultBox.className = "result error show";
     resultBox.innerHTML = `<span>⛔</span><div><div>${msg}</div></div>`;
-    setTimeout(() => modal.classList.remove("open"), 2200);
+    
+    // Give the user 3 seconds to read the failure reason in the modal before it closes
+    setTimeout(() => modal.classList.remove("open"), 3000);
   }
 }
 
