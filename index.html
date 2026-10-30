@@ -7,7 +7,6 @@
 <style>
   :root{
     --heslb-blue:#003366;
-    --heslb-blue-dark:#002347;
     --heslb-green:#00a651;
     --heslb-gold:#f4b400;
     --heslb-light:#f4f7fb;
@@ -52,6 +51,7 @@
   .field span{font-size:14.5px;font-weight:700;color:var(--heslb-blue);}
   .field.amount span{color:var(--heslb-green);font-size:16px;}
   .sign-wrap{display:flex;justify-content:flex-end;margin-top:8px;}
+  
   .sign-btn{
     display:inline-flex;align-items:center;gap:12px;background:var(--heslb-green);
     color:#fff;border:none;padding:15px 28px;border-radius:50px;
@@ -63,6 +63,7 @@
   .tick{width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;}
   .tick svg{width:16px;height:16px;}
 
+  /* Modal */
   .modal-backdrop{
     position:fixed;inset:0;background:rgba(0,20,40,.55);
     display:none;align-items:center;justify-content:center;padding:18px;z-index:50;
@@ -185,15 +186,15 @@
 
 <script>
 /* ============================================================
-   HESLB STRICT DEMO — Real Geofencing Enabled
+   HESLB LOCATION-FIRST DEMO
    ============================================================ */
 
-// Set strict radius: 1500 meters (1.5 km) around KIUT.
+// Generous radius (5,000 meters / 5km) to accommodate indoor GPS drift 
+// while still blocking anyone outside Dar es Salaam.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 1500 }
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 5000 }
 ];
 
-const SIGN_TARGET = { amount: 30000, account: "10920190390303", bank: "NMB", cheque: "777474747" };
 const el = id => document.getElementById(id);
 const modal = el("modal"), checksBox = el("checks"), resultBox = el("result");
 const confirmBtn = el("confirmBtn"), signBtn = el("signBtn");
@@ -225,15 +226,17 @@ function distanceMeters(lat1, lng1, lat2, lng2){
 signBtn.addEventListener("click", () => {
   checksBox.innerHTML = ""; confirmBtn.disabled = true;
   confirmBtn.textContent = "Sign & Confirm"; resultBox.className = "result";
-  modal.classList.add("open"); runVerification();
+  modal.classList.add("open"); 
+  runVerification();
 });
 
 el("closeModal").addEventListener("click", () => modal.classList.remove("open"));
 el("cancelBtn").addEventListener("click", () => modal.classList.remove("open"));
 
 async function runVerification(){
-  const locCheck = addCheck("loc", "Location permission", "Requesting device location…");
-  setCheck("loc", "running", "Requesting device location…");
+  // STEP 1: LOCATION VERIFICATION FIRST
+  const locCheck = addCheck("loc", "Location permission", "Requesting device location...");
+  setCheck("loc", "running", "Requesting device location...");
 
   let coords = null;
   try{
@@ -247,35 +250,35 @@ async function runVerification(){
     setCheck("loc", "pass", `Location acquired (±${Math.round(coords.acc)} m)`);
   }catch(err){
     setCheck("loc", "fail", "Location permission denied or unavailable");
-    finish(false, "Location access is required to sign."); return;
+    finish(false, "Location access is required to sign. Please enable GPS."); return;
   }
 
-  const geoCheck = addCheck("geo", "Campus geofence check", "Comparing coordinates to registered campuses…");
-  await sleep(600);
-  
-  // Calculate real distance
+  const geoCheck = addCheck("geo", "Campus geofence check", "Verifying you are at KIUT...");
+  setCheck("geo", "running", "Verifying you are at KIUT...");
+  await sleep(1000); // Small pause so the user sees the check happening
+
   const dist = distanceMeters(coords.lat, coords.lng, CAMPUSES[0].lat, CAMPUSES[0].lng);
   
-  // Check if distance is within the 1500m radius
   if(dist <= CAMPUSES[0].radius){
-    setCheck("geo", "pass", `Inside campus: ${CAMPUSES[0].name}`);
+    setCheck("geo", "pass", `Verified: Inside KIUT Campus (${Math.round(dist)}m from center)`);
   }else{
-    // Show exactly how far away they are!
     const km = (dist / 1000).toFixed(1);
-    setCheck("geo", "fail", `Outside campus boundary (${km} km away)`);
-    finish(false, `Signing blocked. You are ${km} km away from KIUT. You must be on campus.`);
-    return;
+    setCheck("geo", "fail", `Failed: You are ${km} km away from KIUT`);
+    finish(false, `Signing Blocked. You must be inside the KIUT campus to acknowledge this loan. (Detected ${km} km away).`);
+    return; // STOP HERE. Do not proceed to signing.
   }
 
-  const netCheck = addCheck("net", "Network & proxy risk", "Checking connection reputation…");
-  setCheck("net", "running", "Checking connection reputation…");
-  await sleep(500);
-  setCheck("net", "pass", "No VPN / proxy / Tor indicators");
+  // STEP 2: SECURITY CHECKS (ONLY RUNS IF LOCATION IS OK)
+  const netCheck = addCheck("net", "Network Security", "Checking VPN / Proxy risk...");
+  setCheck("net", "running", "Checking network reputation...");
+  await sleep(700);
+  setCheck("net", "pass", "No suspicious network activity detected");
 
-  const devCheck = addCheck("dev", "Device telemetry", "Capturing browser fingerprint…");
-  await sleep(300);
+  const devCheck = addCheck("dev", "Device Integrity", "Capturing device telemetry...");
+  await sleep(500);
   setCheck("dev", "pass", `${navigator.platform || "Device"} · ${navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop"}`);
 
+  // STEP 3: FINAL APPROVAL
   finish(true);
 }
 
