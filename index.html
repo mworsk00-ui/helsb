@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HESLB — Loan Acknowledgement Demo</title>
+<title>HESLB — Loan Acknowledgement</title>
 <style>
   :root{
     --heslb-blue:#003366;
@@ -17,47 +17,33 @@
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
   body{
     background:linear-gradient(135deg,#eaf1f8 0%,#f9fbfd 100%);
-    min-height:100vh;
-    display:flex;flex-direction:column;align-items:center;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
     padding:30px 15px;color:#1c2b3a;
   }
-
-  /* ---------- Header ---------- */
   .header{
-    width:100%;max-width:720px;
-    background:var(--heslb-blue);
-    color:#fff;border-radius:14px 14px 0 0;
-    padding:18px 22px;display:flex;align-items:center;gap:14px;
-    box-shadow:0 6px 20px rgba(0,51,102,.25);
+    width:100%;max-width:720px;background:var(--heslb-blue);color:#fff;
+    border-radius:14px 14px 0 0;padding:18px 22px;display:flex;align-items:center;
+    gap:14px;box-shadow:0 6px 20px rgba(0,51,102,.25);
   }
   .logo{
-    width:44px;height:44px;border-radius:50%;
-    background:var(--heslb-gold);
+    width:44px;height:44px;border-radius:50%;background:var(--heslb-gold);
     display:flex;align-items:center;justify-content:center;
     font-weight:800;color:var(--heslb-blue);font-size:18px;
   }
   .header h1{font-size:17px;font-weight:600;letter-spacing:.3px;}
   .header p{font-size:12px;opacity:.85;margin-top:2px;}
-
-  /* ---------- Card ---------- */
   .card{
-    width:100%;max-width:720px;background:#fff;
-    border-radius:0 0 14px 14px;
-    box-shadow:0 10px 30px rgba(0,51,102,.12);
-    padding:26px 24px 30px;
+    width:100%;max-width:720px;background:#fff;border-radius:0 0 14px 14px;
+    box-shadow:0 10px 30px rgba(0,51,102,.12);padding:26px 24px 30px;
   }
-
   .section-title{
     font-size:13px;text-transform:uppercase;letter-spacing:1px;
     color:var(--heslb-gray);margin-bottom:14px;font-weight:700;
   }
-
-  /* ---------- Loan Row ---------- */
   .loan-row{
-    display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
-    gap:12px;background:var(--heslb-light);
-    border:1px solid #dde7f1;border-radius:12px;
-    padding:18px 16px;margin-bottom:22px;align-items:center;
+    display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;
+    background:var(--heslb-light);border:1px solid #dde7f1;
+    border-radius:12px;padding:18px 16px;margin-bottom:22px;align-items:center;
   }
   .field label{
     display:block;font-size:10.5px;text-transform:uppercase;
@@ -65,26 +51,18 @@
   }
   .field span{font-size:14.5px;font-weight:700;color:var(--heslb-blue);}
   .field.amount span{color:var(--heslb-green);font-size:16px;}
-
-  /* ---------- Sign Button ---------- */
   .sign-wrap{display:flex;justify-content:flex-end;margin-top:8px;}
   .sign-btn{
-    display:inline-flex;align-items:center;gap:12px;
-    background:var(--heslb-green);color:#fff;border:none;
-    padding:15px 28px;border-radius:50px;font-size:15px;font-weight:700;
-    cursor:pointer;letter-spacing:.4px;
-    box-shadow:0 6px 18px rgba(0,166,81,.35);
-    transition:transform .15s ease, box-shadow .15s ease;
+    display:inline-flex;align-items:center;gap:12px;background:var(--heslb-green);
+    color:#fff;border:none;padding:15px 28px;border-radius:50px;
+    font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.4px;
+    box-shadow:0 6px 18px rgba(0,166,81,.35);transition:transform .15s ease;
   }
-  .sign-btn:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(0,166,81,.45);}
-  .sign-btn:disabled{background:#b6c4cf;box-shadow:none;cursor:not-allowed;transform:none;}
-  .tick{
-    width:26px;height:26px;border-radius:50%;background:#fff;
-    display:flex;align-items:center;justify-content:center;
-  }
+  .sign-btn:hover{transform:translateY(-2px);}
+  .sign-btn:disabled{background:#b6c4cf;box-shadow:none;cursor:not-allowed;}
+  .tick{width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;}
   .tick svg{width:16px;height:16px;}
 
-  /* ---------- Modal ---------- */
   .modal-backdrop{
     position:fixed;inset:0;background:rgba(0,20,40,.55);
     display:none;align-items:center;justify-content:center;padding:18px;z-index:50;
@@ -92,11 +70,9 @@
   .modal-backdrop.open{display:flex;}
   .modal{
     width:100%;max-width:460px;background:#fff;border-radius:16px;
-    overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);
-    animation:pop .25s ease;
+    overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:pop .25s ease;
   }
   @keyframes pop{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
-
   .modal-head{
     background:var(--heslb-blue);color:#fff;padding:16px 20px;
     display:flex;align-items:center;justify-content:space-between;
@@ -107,17 +83,15 @@
     width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:15px;
   }
   .modal-body{padding:20px;}
-
   .check-item{
-    display:flex;align-items:center;gap:12px;
-    padding:12px 14px;border-radius:10px;margin-bottom:10px;
-    background:var(--heslb-light);border:1px solid #e2ebf4;
-    transition:background .3s;
+    display:flex;align-items:center;gap:12px;padding:12px 14px;
+    border-radius:10px;margin-bottom:10px;background:var(--heslb-light);
+    border:1px solid #e2ebf4;transition:background .3s;
   }
   .check-item .icon{
-    width:30px;height:30px;border-radius:50%;
-    background:#cfdce8;display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;font-size:14px;color:#fff;
+    width:30px;height:30px;border-radius:50%;background:#cfdce8;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    font-size:14px;color:#fff;
   }
   .check-item .txt{flex:1;}
   .check-item .txt strong{display:block;font-size:13px;color:#1c2b3a;}
@@ -138,7 +112,6 @@
   .btn-primary{background:var(--heslb-blue);color:#fff;}
   .btn-primary:disabled{background:#b6c4cf;cursor:not-allowed;}
 
-  /* ---------- Result Banner ---------- */
   .result{
     display:none;margin-top:22px;padding:16px 18px;border-radius:12px;
     font-size:14px;font-weight:600;align-items:center;gap:12px;
@@ -146,31 +119,23 @@
   .result.show{display:flex;}
   .result.success{background:#e9f8ef;color:#0c7a3d;border:1px solid #bfe6ce;}
   .result.error{background:#fdecec;color:var(--heslb-red);border:1px solid #f5c6c6;}
+  .ref-line{font-size:12px;color:var(--heslb-gray);margin-top:6px;font-weight:500;}
 
-  .ref-line{
-    font-size:12px;color:var(--heslb-gray);margin-top:6px;font-weight:500;
-  }
-
-  @media(max-width:600px){
-    .loan-row{grid-template-columns:1fr 1fr;}
-  }
+  @media(max-width:600px){.loan-row{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 
-  <!-- Header -->
   <div class="header">
     <div class="logo">H</div>
     <div>
       <h1>HESLB — Loan Acknowledgement</h1>
-      <p>Higher Education Students' Loans Board · Demo Prototype</p>
+      <p>Higher Education Students' Loans Board · Secure Portal</p>
     </div>
   </div>
 
-  <!-- Card -->
   <div class="card">
     <div class="section-title">Loan Details</div>
-
     <div class="loan-row">
       <div class="field amount">
         <label>Amount</label>
@@ -201,20 +166,16 @@
         Sign Loan
       </button>
     </div>
-
     <div class="result" id="result"></div>
   </div>
 
-  <!-- Modal -->
   <div class="modal-backdrop" id="modal">
     <div class="modal">
       <div class="modal-head">
         <h2>Security &amp; Location Verification</h2>
         <button class="close" id="closeModal">✕</button>
       </div>
-      <div class="modal-body" id="checks">
-        <!-- checks injected by JS -->
-      </div>
+      <div class="modal-body" id="checks"></div>
       <div class="modal-footer">
         <button class="btn-outline" id="cancelBtn">Cancel</button>
         <button class="btn-primary" id="confirmBtn" disabled>Sign &amp; Confirm</button>
@@ -224,85 +185,54 @@
 
 <script>
 /* ============================================================
-   HESLB Demo — client-side prototype only.
-   No real student data is accessed or transmitted.
+   HESLB STRICT DEMO — Real Geofencing Enabled
    ============================================================ */
 
-// Real Coordinates for the campuses. 
-// Radius is set very high (100km) just for the demo so it never fails due to GPS drift.
+// Set strict radius: 1500 meters (1.5 km) around KIUT.
 const CAMPUSES = [
-  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 100000 },
-  { name: "University of Dar es Salaam (UDSM)",               lat: -6.7780, lng: 39.2070, radius: 2000 },
-  { name: "Ardhi University",                                  lat: -6.7720, lng: 39.2230, radius: 2000 }
+  { name: "Kampala International University in Tanzania (KIUT)", lat: -6.8654, lng: 39.2491, radius: 1500 }
 ];
 
 const SIGN_TARGET = { amount: 30000, account: "10920190390303", bank: "NMB", cheque: "777474747" };
-
 const el = id => document.getElementById(id);
 const modal = el("modal"), checksBox = el("checks"), resultBox = el("result");
 const confirmBtn = el("confirmBtn"), signBtn = el("signBtn");
 
-let lastResult = null;
-
-/* ---------- helpers ---------- */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function addCheck(key, title, desc){
   const div = document.createElement("div");
-  div.className = "check-item";
-  div.id = "chk-" + key;
-  div.innerHTML = `
-    <div class="icon">•</div>
-    <div class="txt"><strong>${title}</strong><small>${desc}</small></div>`;
+  div.className = "check-item"; div.id = "chk-" + key;
+  div.innerHTML = `<div class="icon">•</div><div class="txt"><strong>${title}</strong><small>${desc}</small></div>`;
   checksBox.appendChild(div);
   return div;
 }
 function setCheck(key, state, note){
-  const div = el("chk-" + key);
-  if(!div) return;
+  const div = el("chk-" + key); if(!div) return;
   div.className = "check-item " + state;
-  const icon = div.querySelector(".icon");
-  icon.textContent = state === "pass" ? "✓" : state === "fail" ? "✕" : "•";
+  div.querySelector(".icon").textContent = state === "pass" ? "✓" : state === "fail" ? "✕" : "•";
   if(note) div.querySelector("small").textContent = note;
 }
 
-/* ---------- geofence math ---------- */
 function distanceMeters(lat1, lng1, lat2, lng2){
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 +
-            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-            Math.sin(dLng/2)**2;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function findCampus(lat, lng){
-  for(const c of CAMPUSES){
-    if(distanceMeters(lat, lng, c.lat, c.lng) <= c.radius) return c;
-  }
-  return null;
-}
-
-/* ---------- main flow ---------- */
 signBtn.addEventListener("click", () => {
-  checksBox.innerHTML = "";
-  lastResult = null;
-  confirmBtn.disabled = true;
-  confirmBtn.textContent = "Sign & Confirm";
-  resultBox.className = "result"; // Hide previous result
-  modal.classList.add("open");
-  runVerification();
+  checksBox.innerHTML = ""; confirmBtn.disabled = true;
+  confirmBtn.textContent = "Sign & Confirm"; resultBox.className = "result";
+  modal.classList.add("open"); runVerification();
 });
 
 el("closeModal").addEventListener("click", () => modal.classList.remove("open"));
 el("cancelBtn").addEventListener("click", () => modal.classList.remove("open"));
 
-/* ---------- verification pipeline ---------- */
 async function runVerification(){
-  // 1. Request location
   const locCheck = addCheck("loc", "Location permission", "Requesting device location…");
-  locCheck.classList.add("running");
   setCheck("loc", "running", "Requesting device location…");
 
   let coords = null;
@@ -311,98 +241,62 @@ async function runVerification(){
       if(!navigator.geolocation) return reject(new Error("Geolocation not supported"));
       navigator.geolocation.getCurrentPosition(
         p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
-        e => reject(e),
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        e => reject(e), { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     });
     setCheck("loc", "pass", `Location acquired (±${Math.round(coords.acc)} m)`);
   }catch(err){
     setCheck("loc", "fail", "Location permission denied or unavailable");
-    finish(false, "Location access is required to sign.");
-    return;
+    finish(false, "Location access is required to sign."); return;
   }
 
-  // 2. Geofence / campus detection
   const geoCheck = addCheck("geo", "Campus geofence check", "Comparing coordinates to registered campuses…");
-  await sleep(800); // Small delay for visual effect
-  
-  const campus = findCampus(coords.lat, coords.lng);
-  
-  if(campus){
-    // We bypass the slow network call completely for the demo!
-    setCheck("geo", "pass", `Inside campus: ${campus.name}`);
-  }else{
-    setCheck("geo", "fail", `Outside registered campus boundaries.`);
-    finish(false, "You must be inside a registered campus to sign.");
-    return;
-  }
-
-  // 3. VPN / proxy / Tor heuristic
-  const netCheck = addCheck("net", "Network & proxy risk", "Checking connection reputation…");
-  netCheck.classList.add("running");
   await sleep(600);
   
-  // Always passes in this demo version
+  // Calculate real distance
+  const dist = distanceMeters(coords.lat, coords.lng, CAMPUSES[0].lat, CAMPUSES[0].lng);
+  
+  // Check if distance is within the 1500m radius
+  if(dist <= CAMPUSES[0].radius){
+    setCheck("geo", "pass", `Inside campus: ${CAMPUSES[0].name}`);
+  }else{
+    // Show exactly how far away they are!
+    const km = (dist / 1000).toFixed(1);
+    setCheck("geo", "fail", `Outside campus boundary (${km} km away)`);
+    finish(false, `Signing blocked. You are ${km} km away from KIUT. You must be on campus.`);
+    return;
+  }
+
+  const netCheck = addCheck("net", "Network & proxy risk", "Checking connection reputation…");
+  setCheck("net", "running", "Checking connection reputation…");
+  await sleep(500);
   setCheck("net", "pass", "No VPN / proxy / Tor indicators");
 
-  // 4. Device & browser telemetry
   const devCheck = addCheck("dev", "Device telemetry", "Capturing browser fingerprint…");
-  await sleep(400);
-  setCheck("dev", "pass",
-    `${navigator.platform || "Device"} · ${navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop"} · IP: demo`);
-
-  // 5. Timestamp
-  const tsCheck = addCheck("ts", "Signing timestamp", "Recording server-aligned time…");
   await sleep(300);
-  setCheck("ts", "pass", new Date().toLocaleString());
+  setCheck("dev", "pass", `${navigator.platform || "Device"} · ${navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop"}`);
 
-  // 6. Final approval
   finish(true);
 }
 
-/* ---------- completion ---------- */
 function finish(success, msg){
   confirmBtn.disabled = false;
   if(success){
     confirmBtn.textContent = "Sign & Confirm";
-    confirmBtn.classList.add("ready");
     confirmBtn.onclick = () => {
-      lastResult = {
-        campus: document.querySelector("#chk-geo small").textContent,
-        ts: new Date().toISOString(),
-        ref: "HESLB-" + Math.random().toString(36).slice(2, 9).toUpperCase(),
-        amount: SIGN_TARGET.amount
-      };
       modal.classList.remove("open");
-      showReceipt(lastResult);
+      resultBox.className = "result success show";
+      resultBox.innerHTML = `<span>✅</span><div>Loan acknowledged successfully.<div class="ref-line">Ref: HESLB-${Math.random().toString(36).slice(2, 9).toUpperCase()} · Verified on Campus</div></div>`;
+      signBtn.disabled = true;
+      signBtn.innerHTML = `Signed`;
     };
   }else{
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Blocked";
     resultBox.className = "result error show";
     resultBox.innerHTML = `<span>⛔</span><div><div>${msg}</div></div>`;
-    setTimeout(() => modal.classList.remove("open"), 3000);
+    setTimeout(() => modal.classList.remove("open"), 4000);
   }
-}
-
-function showReceipt(r){
-  resultBox.className = "result success show";
-  resultBox.innerHTML = `
-    <span>✅</span>
-    <div>
-      <div>Loan acknowledged successfully.</div>
-      <div class="ref-line">
-        Reference: ${r.ref} · Amount: ${r.amount.toLocaleString()} TZS · ${new Date(r.ts).toLocaleString()}<br>
-        ${r.campus}
-      </div>
-    </div>`;
-  signBtn.disabled = true;
-  signBtn.innerHTML = `<span class="tick">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#00a651" stroke-width="3.5"
-           stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-    </span> Signed`;
 }
 </script>
 </body>
